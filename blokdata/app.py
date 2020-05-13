@@ -1,4 +1,4 @@
-from sheet_data import google_sheet_to_json
+from .sheet_data import google_sheet_to_json
 
 from flask import Flask
 from flask_cors import CORS, cross_origin
