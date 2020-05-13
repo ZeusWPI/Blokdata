@@ -27,7 +27,7 @@ RANGE_NAME = #METOO
 
 5. Give the service account's email (read) access to the sheet
 
-6. `python src/app.py`
+6. `./run_dev.py`
 
 ## TODO
 
