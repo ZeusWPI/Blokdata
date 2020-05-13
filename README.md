@@ -31,6 +31,5 @@ RANGE_NAME = #METOO
 
 ## TODO
 
-- Code cleanup: separate files
 - Database caching: don't re-request google sheet data every time
 - Error handling: it shouldn't ever crash on user input
