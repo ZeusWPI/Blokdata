@@ -3,33 +3,18 @@ from httplib2 import Http
 from google.oauth2 import service_account
 import json
 
-# Flask shizzle
-from flask import Flask
-from flask_cors import CORS, cross_origin
-app = Flask(__name__)
-cors = CORS(app)
-app.config['CORS_HEADERS'] = 'Content-Type'
-
-import configparser
-CONFIG = configparser.ConfigParser()
-CONFIG.read("config.ini")
-
-
-SPREADSHEET_ID = CONFIG["Google"]["SHEET_ID"]
-RANGE_NAME = CONFIG["Google"]["RANGE_NAME"]
-
-def get_google_sheet():
+def get_google_sheet(spreadsheet_id, range_name):
     """ Retrieve sheet data using OAuth credentials and Google Python API. """
     credentials = service_account.Credentials.from_service_account_file('service_account.json')
     scoped_credentials = credentials.with_scopes(['https://www.googleapis.com/auth/spreadsheets.readonly'])
     service = build('sheets', 'v4', credentials=scoped_credentials)
 
     # Call the Sheets API
-    gsheet = service.spreadsheets().values().get(spreadsheetId=SPREADSHEET_ID, range=RANGE_NAME).execute()
+    gsheet = service.spreadsheets().values().get(spreadsheetId=spreadsheet_id, range=range_name).execute()
     return gsheet
 
-def google_sheet_to_json():
-    sheet = get_google_sheet()
+def google_sheet_to_json(spreadsheet_id, range_name):
+    sheet = get_google_sheet(spreadsheet_id, range_name)
     data = sheet["values"]
     return json.dumps([create_point(row) for row in data[1:]])
 
@@ -62,12 +47,3 @@ def create_point(row):
             "type": location_type,
         }
     }
-
-@app.route('/data.json')
-@cross_origin()
-def data_json():
-    return google_sheet_to_json()
-
-
-if __name__ == "__main__":
-    app.run()
