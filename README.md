@@ -28,3 +28,9 @@ RANGE_NAME = #METOO
 5. Give the service account's email (read) access to the sheet
 
 6. `python app.py`
+
+## TODO
+
+- Code cleanup: separate files
+- Database caching: don't re-request google sheet data every time
+- Error handling: it shouldn't ever crash on user input
