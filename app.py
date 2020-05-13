@@ -3,6 +3,13 @@ from httplib2 import Http
 from google.oauth2 import service_account
 import json
 
+# Flask shizzle
+from flask import Flask
+from flask_cors import CORS, cross_origin
+app = Flask(__name__)
+cors = CORS(app)
+app.config['CORS_HEADERS'] = 'Content-Type'
+
 import configparser
 CONFIG = configparser.ConfigParser()
 CONFIG.read("config.ini")
@@ -56,4 +63,11 @@ def create_point(row):
         }
     }
 
-print(google_sheet_to_json())
+@app.route('/data.json')
+@cross_origin()
+def data_json():
+    return google_sheet_to_json()
+
+
+if __name__ == "__main__":
+    app.run()
