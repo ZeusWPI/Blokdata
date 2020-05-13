@@ -16,10 +16,17 @@ def get_google_sheet(spreadsheet_id, range_name):
 def google_sheet_to_json(spreadsheet_id, range_name):
     sheet = get_google_sheet(spreadsheet_id, range_name)
     data = sheet["values"]
-    return json.dumps([create_point(row) for row in data[1:]])
+    ret = []
+    for row in data[1:]:
+        point = create_point(row)
+        if point is not None:
+            ret.append(point)
+    return json.dumps(ret)
 
 def create_point(row):
-    lat, lon, name, address, capacity, startdate, enddate, hours_monday, hours_tuesday, hours_wednesday, hours_thursday, hours_friday, hours_saturday, hours_sunday, extra, location_type = row
+    active, lat, lon, name, address, capacity, startdate, enddate, hours_monday, hours_tuesday, hours_wednesday, hours_thursday, hours_friday, hours_saturday, hours_sunday, extra, location_type = row
+    if active == "FALSE":
+        return None
     return {
         "type": "Feature",
         "geometry": {
