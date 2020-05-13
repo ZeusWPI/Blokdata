@@ -25,8 +25,8 @@ RANGE_NAME = CONFIG["Google"]["RANGE_NAME"]
 CACHE_TIMEOUT = int(CONFIG["Cache"]["TIMEOUT"])
 
 @app.route('/data.json')
-@cache.cached(timeout=CACHE_TIMEOUT)
 @cross_origin()
+@cache.cached(timeout=CACHE_TIMEOUT)
 def data_json():
     return google_sheet_to_json(SPREADSHEET_ID, RANGE_NAME)
 

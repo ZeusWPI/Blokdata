@@ -24,6 +24,8 @@ def google_sheet_to_json(spreadsheet_id, range_name):
     return json.dumps(ret)
 
 def create_point(row):
+    if (len(row) != 17):
+        return None
     active, lat, lon, name, address, capacity, startdate, enddate, hours_monday, hours_tuesday, hours_wednesday, hours_thursday, hours_friday, hours_saturday, hours_sunday, extra, location_type = row
     if active == "FALSE":
         return None
