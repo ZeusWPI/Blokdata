@@ -19,6 +19,10 @@ pip install -r requirements.txt
 
 SHEET_ID = #FILLMEIN
 RANGE_NAME = #METOO
+
+[Cache]
+
+TIMEOUT = 10
 ```
 
 3. [Request a Google service account](https://console.cloud.google.com/iam-admin/serviceaccounts)
@@ -31,5 +35,4 @@ RANGE_NAME = #METOO
 
 ## TODO
 
-- Database caching: don't re-request google sheet data every time
 - Error handling: it shouldn't ever crash on user input
