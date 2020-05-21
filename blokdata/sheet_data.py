@@ -26,9 +26,15 @@ def google_sheet_to_json(spreadsheet_id, range_name):
 def create_point(row):
     if (len(row) != 17):
         return None
-    active, lat, lon, name, address, capacity, startdate, enddate, hours_monday, hours_tuesday, hours_wednesday, hours_thursday, hours_friday, hours_saturday, hours_sunday, extra, location_type = row
+
+    #    0    1    2     3        4         5          6        7  8  9  10 11 12 13 14     15             16
+    active, lat, lon, name, address, capacity, startdate, enddate, _, _, _, _, _, _, _, extra, location_type = row
+
     if active == "FALSE":
         return None
+
+    hours = [x.replace("</br>", "\n") for x in row[8:15]]
+
     return {
         "type": "Feature",
         "geometry": {
@@ -43,15 +49,11 @@ def create_point(row):
                 "start": startdate,
                 "end": enddate,
             },
-            "hours": {
-                "monday": hours_monday,
-                "tuesday": hours_tuesday,
-                "wednesday": hours_wednesday,
-                "thursday": hours_thursday,
-                "friday": hours_friday,
-                "saturday": hours_saturday,
-                "sunday": hours_sunday,
-            },
+            # We give dict an iterable of pairs, dict gives us a dict
+            "hours": dict(zip(
+                ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"],
+                hours
+            )),
             "extra": extra,
             "type": location_type,
         }
