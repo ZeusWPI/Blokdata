@@ -28,7 +28,7 @@ def create_point(row):
         return None
 
     #    0    1    2     3        4         5          6        7  8  9  10 11 12 13 14     15             16
-    active, lat, lon, name, address, capacity, startdate, enddate, _, _, _, _, _, _, _, extra, location_type = row
+    active, lat, lon, name, address, capacity, startdate, enddate, _, _, _, _, _, _, _, extra, location_type = row[0:17]
 
     if active == "FALSE":
         return None
