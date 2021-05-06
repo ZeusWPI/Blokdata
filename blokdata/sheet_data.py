@@ -24,7 +24,7 @@ def google_sheet_to_json(spreadsheet_id, range_name):
     return json.dumps(ret)
 
 def create_point(row):
-    if (len(row) != 17):
+    if (len(row) < 17):
         return None
 
     #    0    1    2     3        4         5          6        7  8  9  10 11 12 13 14     15             16
