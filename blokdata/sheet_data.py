@@ -34,9 +34,6 @@ def create_point(row):
         return None
 
     hours = [x.replace("</br>", "\n") for x in row[8:15]]
-    
-    wheelchair=(wheelchair=="Ja")
-    wifi=(wifi=="Ja")
 
     return {
         "type": "Feature",
@@ -59,7 +56,7 @@ def create_point(row):
             )),
             "extra": extra,
             "type": location_type,
-            "wheelchair": wheelchair,
-            "wifi": wifi,
+            "wheelchair": (wheelchair.lower() == "ja"),
+            "wifi": (wifi.lower() == "ja"),
         }
     }
