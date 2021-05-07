@@ -24,11 +24,11 @@ def google_sheet_to_json(spreadsheet_id, range_name):
     return json.dumps(ret)
 
 def create_point(row):
-    if (len(row) < 17):
+    if (len(row) < 19):
         return None
 
-    #    0    1    2     3        4         5          6        7  8  9  10 11 12 13 14     15             16
-    active, lat, lon, name, address, capacity, startdate, enddate, _, _, _, _, _, _, _, extra, location_type = row[0:17]
+    #    0    1    2     3        4         5          6        7  8  9  10 11 12 13 14     15             16          17    18
+    active, lat, lon, name, address, capacity, startdate, enddate, _, _, _, _, _, _, _, extra, location_type, wheelchair, wifi = row[0:19]
 
     if active == "FALSE":
         return None
@@ -56,5 +56,7 @@ def create_point(row):
             )),
             "extra": extra,
             "type": location_type,
+            "wheelchair": (wheelchair.lower() == "ja"),
+            "wifi": (wifi.lower() == "ja"),
         }
     }
