@@ -17,29 +17,38 @@ def google_sheet_to_json(spreadsheet_id, range_name):
     sheet = get_google_sheet(spreadsheet_id, range_name)
     data = sheet["values"]
     ret = []
-    for row in data[1:]:
-        point = create_point(row)
-        if point is not None:
-            ret.append(point)
-    return json.dumps(ret)
+    errors = []
+    for i, row in enumerate(data[1:]):
+        try:
+            point = create_point(i+1, row)
+            if point is not None:
+                ret.append(point)
+        except Exception as e:
+            errors.append({ "type": "error", "row": i+1, "message": "\n".join(e.args) })
+    return json.dumps({ "points": ret, "errors": errors })
 
-def create_point(row):
-    if (len(row) < 19):
-        return None
+def create_point(rowIndex, rowContent):
+    if (len(rowContent) < 19):
+        raise Exception(f"Row {rowIndex} does not have the correct format.", f"It is too short: a length of 19 was expected, but the length found was {len(rowContent)}.")
 
     #    0    1    2     3        4         5          6        7  8  9  10 11 12 13 14     15             16    17          18
-    active, lat, lon, name, address, capacity, startdate, enddate, _, _, _, _, _, _, _, extra, location_type, wifi, wheelchair = row[0:19]
+    active, lat, lon, name, address, capacity, startdate, enddate, _, _, _, _, _, _, _, extra, location_type, wifi, wheelchair = rowContent[0:19]
 
     if active == "FALSE":
         return None
 
-    hours = [x.replace("</br>", "\n") for x in row[8:15]]
+    hours = [x.replace("</br>", "\n") for x in rowContent[8:15]]
+
+    try:
+        coordinates = [f"{parse_coordinate(lon)}", f"{parse_coordinate(lat)}"]
+    except Exception as a:
+        raise Exception(f"Row {rowIndex} does not have the correct format.", f"One of the coordinates failed to parse.", *a.args)
 
     return {
         "type": "Feature",
         "geometry": {
             "type": "Point",
-            "coordinates": [lon, lat],
+            "coordinates": coordinates,
         },
         "properties": {
             "name": name,
@@ -60,3 +69,17 @@ def create_point(row):
             "wifi": (wifi.lower() == "ja"),
         }
     }
+
+# Function to parse a coordinate
+# Should be able to handle both English and Dutch locales
+# If it can't parse the number, throw a clear error
+def parse_coordinate(coord):
+    if coord == "":
+        raise Exception("Coord value is empty.")
+
+    comma_fixed_coord = coord.replace(",", ".")
+
+    try:
+        return float(comma_fixed_coord)
+    except:
+        raise Exception(f"Coord is not a float: {comma_fixed_coord}")

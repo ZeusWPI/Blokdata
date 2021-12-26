@@ -13,7 +13,6 @@ pip install -r requirements.txt
 ```
 
 2. Setup `config.ini` as follows
-
 ```
 [Google]
 
@@ -24,6 +23,8 @@ RANGE_NAME = #METOO
 
 TIMEOUT = 10
 ```
+
+The Sheet-id can be found in your sheet URL: https://docs.google.com/spreadsheets/d/**1coZZXZcGE4oK-ca-OGoIFizH_c4E62Ut0cktp8ppNCg**/edit#gid=0
 
 3. [Request a Google service account](https://console.cloud.google.com/iam-admin/serviceaccounts)
 
