@@ -11,10 +11,10 @@ app = Flask(__name__)
 
 # Add CORS
 cors = CORS(app)
-app.config['CORS_HEADERS'] = 'Content-Type'
+app.config["CORS_HEADERS"] = "Content-Type"
 
 # Add caching
-cache = Cache(app, config={'CACHE_TYPE': 'simple'})
+cache = Cache(app, config={"CACHE_TYPE": "simple"})
 
 # Read the config file
 CONFIG = configparser.ConfigParser()
@@ -24,11 +24,13 @@ SPREADSHEET_ID = CONFIG["Google"]["SHEET_ID"]
 RANGE_NAME = CONFIG["Google"]["RANGE_NAME"]
 CACHE_TIMEOUT = int(CONFIG["Cache"]["TIMEOUT"])
 
-@app.route('/data.json')
+
+@app.route("/data.json")
 @cross_origin()
 @cache.cached(timeout=CACHE_TIMEOUT)
 def data_json():
     return google_sheet_to_json(SPREADSHEET_ID, RANGE_NAME)
+
 
 if __name__ == "__main__":
     app.run()
