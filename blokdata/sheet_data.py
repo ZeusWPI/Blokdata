@@ -1,7 +1,9 @@
 from apiclient.discovery import build
 from httplib2 import Http
 from google.oauth2 import service_account
-import json
+import requests
+import pyproj
+
 
 def get_google_sheet(spreadsheet_id, range_name):
     """ Retrieve sheet data using OAuth credentials and Google Python API. """
@@ -21,7 +23,51 @@ def google_sheet_to_json(spreadsheet_id, range_name):
         point = create_point(row)
         if point is not None:
             ret.append(point)
-    return json.dumps(ret)
+    return ret
+
+
+def bloklocaties_to_json():
+    response = requests.get("https://bloklocaties.stad.gent/api/stadgent/locations")
+    data = response.json()
+    ret = []
+    for location in data:
+        coords = location["coordinates"].split(", ")
+        wgs84 = pyproj.Proj(projparams='epsg:4326')
+        InputGrid = pyproj.Proj(projparams='epsg:3857')
+        long, lat = pyproj.transform(InputGrid, wgs84, coords[0], coords[1])
+
+        ret.append({
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [lat, long],
+            },
+            "properties": {
+                "name": location["titel"],
+                "address": location["adres"],
+                "capacity": location["totale_capaciteit"],
+                "period": {
+                    "start": "",
+                    "end": "",
+                },
+                "hours": {
+                    "monday": location["openingsuren"] if "Week" in location["tag_2"].split(", ") else "",
+                    "tuesday": location["openingsuren"] if "Week" in location["tag_2"].split(", ") else "",
+                    "wednesday": location["openingsuren"] if "Week" in location["tag_2"].split(", ") else "",
+                    "thursday": location["openingsuren"] if "Week" in location["tag_2"].split(", ") else "",
+                    "friday": location["openingsuren"] if "Week" in location["tag_2"].split(", ") else "",
+                    "saturday": location["openingsuren"] if "Weekend" in location["tag_2"].split(", ") else "",
+                    "sunday": location["openingsuren"] if "Weekend" in location["tag_2"].split(", ") else "",
+                },
+                "extra": location["tag_1"],
+                "type": "Stad Gent",
+                "wheelchair": False,
+                "wifi": True,
+                "url": location["lees_meer"],
+            }
+        })
+    return ret
+
 
 def create_point(row):
     if (len(row) < 19):
